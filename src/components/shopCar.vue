@@ -93,7 +93,9 @@
     </div>
 </template>
 <script>
-export default {};
+export default {
+    name:'shopCar'
+};
 </script>
 <style>
 </style>

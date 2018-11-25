@@ -84,7 +84,7 @@
                                         </div>
                                         <div class="conn-box">
                                             <div class="editor">
-                                                <textarea id="txtContent" v-model="comContent" name="txtContent" sucmsg=" " datatype="*10-1000" nullmsg="请填写评论内容！"></textarea>
+                                                <textarea id="txtContent" v-model.trim="comContent" name="txtContent" sucmsg=" " datatype="*10-1000" nullmsg="请填写评论内容！"></textarea>
                                                 <span class="Validform_checktip"></span>
                                             </div>
                                             <div class="subcon">
@@ -109,7 +109,7 @@
                                         </li>
                                     </ul>
                                     <div class="page-box" style="margin: 5px 0px 0px 62px;">
-                                        <Page @on-change="toggleCom" :total="totalcount" show-elevator />
+                                        <Page :current="pageIndex" @on-change="toggleCom" :total="totalcount" show-elevator />
                                     </div>
                                 </div>
                             </div>
@@ -197,13 +197,21 @@ export default {
       this.getComments();
     },
     submitCom: function() {
+      if(this.comContent == ''){
+          this.$Message.warning('评论内容不能为空哦 !!');
+          return;
+      }
       this.$axios.post(
         "http://111.230.232.110:8899/site/validate/comment/post/goods/" +
           this.artId,{commenttxt:this.comContent}
       ).then(data=>{
           if(data.data.status == 0){
+              this.pageIndex = 1;
               this.getComments();
               this.comContent = '';
+              this.$Message.success(data.data.message);
+          }else{
+              this.$Message.success(data.data.message);
           }
       });
     }
