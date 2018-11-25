@@ -62,7 +62,7 @@
                                             <div class="info">
                                                 <strong>购物车没有商品！</strong>
                                                 <p>您的购物车为空，
-                                                    <a href="/index.html">马上去购物</a>吧！</p>
+                                                   <router-link to="/proList">马上去购物</router-link>吧！</p>
                                             </div>
                                         </div>
                                     </td>

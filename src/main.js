@@ -40,6 +40,12 @@ Vue.filter("showTimePlus", function(value) {
   return moment(value).format("YYYY-MM-DD HH:mm:ss");
 });
 
+// 放大镜组件
+import ProductZoomer from 'vue-product-zoomer'
+Vue.use(ProductZoomer)
+
+
+
 // Vuex的使用
 import Vuex from "vuex";
 Vue.use(Vuex);

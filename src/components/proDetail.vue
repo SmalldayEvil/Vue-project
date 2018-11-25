@@ -14,7 +14,7 @@
                     <div class="left-925">
                         <div class="goods-box clearfix">
                             <div class="pic-box">
-                                <img :src="imgList[0].original_path" alt="">
+                                <ProductZoomer v-if="images.normal_size.length!=0" :base-images="images" :base-zoomer-options="zoomerOptions" />
                             </div>
                             <div class="goods-spec">
                                 <h1>{{proInfo.title}}</h1>
@@ -162,11 +162,25 @@ export default {
       pageSize: 10,
       comments: [],
       totalcount: null,
-      comContent:''
+      comContent: "",
+      images: {
+        // required
+        normal_size: []
+      },
+      zoomerOptions: {
+        zoomFactor: 2,
+        pane: "container-round",
+        hoverDelay: 200,
+        namespace: "inline-zoomer",
+        move_by_click: true,
+        scroll_items: 5,
+        choosed_thumb_border_color: "#bbdefb"
+      }
     };
   },
   methods: {
     initData: function() {
+      this.images.normal_size = [];
       this.buyCount = 1;
       this.artId = this.$route.params.artId;
       this.$axios
@@ -177,6 +191,12 @@ export default {
           this.proInfo = data.data.message.goodsinfo;
           this.hotPro = data.data.message.hotgoodslist;
           this.imgList = data.data.message.imglist;
+          this.imgList.forEach(v => {
+            this.images.normal_size.push({
+              id: v.id,
+              url: v.thumb_path
+            });
+          });
         });
       this.getComments();
     },
@@ -197,29 +217,33 @@ export default {
       this.getComments();
     },
     submitCom: function() {
-      if(this.comContent == ''){
-          this.$Message.warning('评论内容不能为空哦 !!');
-          return;
+      if (this.comContent == "") {
+        this.$Message.warning("评论内容不能为空哦 !!");
+        return;
       }
-      this.$axios.post(
-        "http://111.230.232.110:8899/site/validate/comment/post/goods/" +
-          this.artId,{commenttxt:this.comContent}
-      ).then(data=>{
-          if(data.data.status == 0){
-              this.pageIndex = 1;
-              this.getComments();
-              this.comContent = '';
-              this.$Message.success(data.data.message);
-          }else{
-              this.$Message.success(data.data.message);
+      this.$axios
+        .post(
+          "http://111.230.232.110:8899/site/validate/comment/post/goods/" +
+            this.artId,
+          { commenttxt: this.comContent }
+        )
+        .then(data => {
+          if (data.data.status == 0) {
+            this.pageIndex = 1;
+            this.getComments();
+            this.comContent = "";
+            this.$Message.success(data.data.message);
+          } else {
+            this.$Message.success(data.data.message);
           }
-      });
+        });
     },
-    add2shopCar:function(){
-        this.$store.commit('add2shopCar',{
-            proId:this.artId,
-            proNum:this.buyCount
-        })
+    add2shopCar: function() {
+      this.$store.commit("add2shopCar", {
+        proId: this.artId,
+        proNum: this.buyCount
+      });
+      this.$Message.success('添加成功!');
     }
   },
   created: function() {
@@ -239,11 +263,18 @@ export default {
   max-width: 100%;
 }
 .pic-box {
-  width: 395px;
-  height: 320px;
-}
-.pic-box img {
   width: 320px;
-  height: 320px;
+  /* height: 320px; */
+}
+.preview-box img {
+  width: 100%;
+  height: 100%;
+}
+.thumb-list img {
+  width: 60px;
+  height: 60px;
+}
+.control {
+  display: none !important;
 }
 </style>
