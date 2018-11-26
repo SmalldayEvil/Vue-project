@@ -116,10 +116,7 @@
 
 <script>
 export default {
-  name: "app",
-  created:function(){
-    console.log(this.$store);
-  }
+  name: "app"
 };
 </script>
 
