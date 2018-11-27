@@ -7,6 +7,8 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 // 设置axios基地址
 axios.defaults.baseURL = "http://111.230.232.110:8899/";
+// 设置让axios能够携带cookie发起请求
+axios.defaults.withCredentials=true;
 // 将axios添加到Vue的原型中,时Vue实例化的对象(组件)都能调用
 Vue.prototype.$axios = axios;
 import ElementUI from "element-ui";
