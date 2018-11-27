@@ -19,7 +19,7 @@
             <span>
               <a href="" class="">会员中心</a>
               <strong>|</strong>
-              <a>退出</a>
+              <a @click="logout">退出</a>
               <strong>|</strong>
             </span>
             <router-link to="/shopCar">
@@ -116,7 +116,16 @@
 
 <script>
 export default {
-  name: "app"
+  name: "app",
+  methods:{
+    logout(){
+      this.$axios.get('site/account/logout').then(data=>{
+        if(data.data.status == 0){
+          this.$router.push('/login');
+        }
+      })
+    }
+  }
 };
 </script>
 

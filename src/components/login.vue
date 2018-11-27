@@ -52,7 +52,6 @@ export default {
                 if(data.data.status == 1){
                     alert(data.data.message);
                 }else {
-                    console.log(1)
                     this.$router.push('/order');
                 }
             })
