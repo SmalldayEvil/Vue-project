@@ -103,7 +103,7 @@
                             <router-link to="/proList">
                                 <button class="button">继续购物</button>
                             </router-link>
-                            <router-link to="/order">
+                            <router-link :to="'/order/'+ids">
                                 <button class="submit">立即结算</button>
                             </router-link>
                         </div>
@@ -157,6 +157,16 @@ export default {
         }
       });
       return sum;
+    },
+    ids:function(){
+        let str = '';
+        this.shopCarList.forEach(v=>{
+            if(v.selected){
+                str+=v.id+',';
+            }
+        })
+        str = str.slice(0,str.length-1);
+        return str;
     }
   },
   created: function() {

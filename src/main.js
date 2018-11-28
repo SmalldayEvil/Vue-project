@@ -8,7 +8,7 @@ Vue.use(VueRouter);
 // 设置axios基地址
 axios.defaults.baseURL = "http://111.230.232.110:8899/";
 // 设置让axios能够携带cookie发起请求
-axios.defaults.withCredentials=true;
+axios.defaults.withCredentials = true;
 // 将axios添加到Vue的原型中,时Vue实例化的对象(组件)都能调用
 Vue.prototype.$axios = axios;
 import ElementUI from "element-ui";
@@ -31,7 +31,7 @@ let routes = [
   { path: "/proList", component: proList },
   { path: "/proDetail/:artId", component: proDetail },
   { path: "/shopCar", component: shopCar },
-  { path: "/order", component: order },
+  { path: "/order/:ids", component: order },
   { path: "/login", component: login }
 ];
 
@@ -41,9 +41,13 @@ let router = new VueRouter({
 
 // 注册导航守卫
 router.beforeEach((to, from, next) => {
-  if (to.path == "/order") {
+  if (to.path.indexOf("/order") != -1) {
     axios.get("site/account/islogin").then(data => {
       if (data.data.code == "nologin") {
+        Vue.prototype.$message({
+          message: '请先登录!',
+          type: 'warning'
+        });
         router.push("/login");
         return;
       }
@@ -72,7 +76,8 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
-    shopCarData: JSON.parse(localStorage.getItem("shopCar")) || {}
+    shopCarData: JSON.parse(localStorage.getItem("shopCar")) || {},
+    isLogin:false
   },
   mutations: {
     add2shopCar(state, obj) {
@@ -86,6 +91,9 @@ const store = new Vuex.Store({
     updateData(state, obj) {
       state.shopCarData = obj;
       // console.log(obj);
+    },
+    loginChange(state,status){
+      state.isLogin = status;
     }
   },
   getters: {
