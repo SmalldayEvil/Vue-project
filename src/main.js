@@ -25,14 +25,25 @@ import proDetail from "./components/proDetail.vue";
 import shopCar from "./components/shopCar.vue";
 import order from "./components/order.vue";
 import login from "./components/login.vue";
+import payMoney from "./components/payMoney.vue";
+import paySuccess from "./components/paySuccess.vue";
+import VIP from "./components/VIP.vue";
+
 
 let routes = [
   { path: "/", redirect: "/proList" },
   { path: "/proList", component: proList },
   { path: "/proDetail/:artId", component: proDetail },
   { path: "/shopCar", component: shopCar },
-  { path: "/order/:ids", component: order },
-  { path: "/login", component: login }
+  { path: "/order/:ids", component: order, meta: { cheakLogin: true } },
+  { path: "/login", component: login },
+  {
+    path: "/payMoney/:orderid",
+    component: payMoney,
+    meta: { cheakLogin: true }
+  },
+  { path: "/paySuccess", component: paySuccess, meta: { cheakLogin: true } },
+  { path: "/VIP", component: VIP, meta: { cheakLogin: true } },
 ];
 
 let router = new VueRouter({
@@ -41,12 +52,13 @@ let router = new VueRouter({
 
 // 注册导航守卫
 router.beforeEach((to, from, next) => {
-  if (to.path.indexOf("/order") != -1) {
+  // if (to.path.indexOf("/order") != -1) {
+  if (to.meta.cheakLogin) {
     axios.get("site/account/islogin").then(data => {
       if (data.data.code == "nologin") {
         Vue.prototype.$message({
-          message: '请先登录!',
-          type: 'warning'
+          message: "请先登录!",
+          type: "warning"
         });
         router.push("/login");
         return;
@@ -77,7 +89,7 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     shopCarData: JSON.parse(localStorage.getItem("shopCar")) || {},
-    isLogin:false
+    isLogin: false
   },
   mutations: {
     add2shopCar(state, obj) {
@@ -92,8 +104,11 @@ const store = new Vuex.Store({
       state.shopCarData = obj;
       // console.log(obj);
     },
-    loginChange(state,status){
+    loginChange(state, status) {
       state.isLogin = status;
+    },
+    delData(state,id){
+      Vue.delete(state.shopCarData,id);
     }
   },
   getters: {
