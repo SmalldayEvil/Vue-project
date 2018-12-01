@@ -28,6 +28,9 @@ import login from "./components/login.vue";
 import payMoney from "./components/payMoney.vue";
 import paySuccess from "./components/paySuccess.vue";
 import VIP from "./components/VIP.vue";
+import orderList from "./components/orderList.vue";
+import orderDetail from "./components/orderDetail.vue";
+import userInfo from "./components/userInfo.vue";
 
 
 let routes = [
@@ -43,10 +46,32 @@ let routes = [
     meta: { cheakLogin: true }
   },
   { path: "/paySuccess", component: paySuccess, meta: { cheakLogin: true } },
-  { path: "/VIP", component: VIP, meta: { cheakLogin: true } },
+  {
+    path: "/VIP",
+    component: VIP,
+    meta: { cheakLogin: true },
+    children: [
+      {
+        path:'',
+        component: userInfo,
+        meta: { cheakLogin: true }
+      },
+      {
+        path: "orderList",
+        component: orderList,
+        meta: { cheakLogin: true }
+      },
+      {
+        path: "orderDetail/:orderid",
+        component: orderDetail,
+        meta: { cheakLogin: true }
+      }
+    ]
+  }
 ];
 
 let router = new VueRouter({
+  mode:'history',
   routes
 });
 
@@ -107,8 +132,8 @@ const store = new Vuex.Store({
     loginChange(state, status) {
       state.isLogin = status;
     },
-    delData(state,id){
-      Vue.delete(state.shopCarData,id);
+    delData(state, id) {
+      Vue.delete(state.shopCarData, id);
     }
   },
   getters: {
