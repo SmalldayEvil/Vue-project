@@ -5,7 +5,10 @@
       style="min-height: 765px;"
     >
       <div class="sub-tit">
-        <router-link to="/VIP/orderList" class="add">
+        <router-link
+          to="/VIP/orderList"
+          class="add"
+        >
           <i class="iconfont icon-reply"></i>返回
         </router-link>
         <ul>
@@ -20,15 +23,18 @@
             <div class="progress">下单</div>
             <div class="info">2017-10-25 21:38:15</div>
           </li>
-          <li class="">
+          <li :class="{active:orderInfo.status>=2}">
             <div class="progress">已付款</div>
             <div class="info">2017-10-25 21:38:15</div>
           </li>
-          <li class="">
+          <li :class="{active:orderInfo.status>=3}">
             <div class="progress">已经发货</div>
             <div class="info">2017-10-25 21:38:15</div>
           </li>
-          <li class="last">
+          <li
+            :class="{active:orderInfo.status>=4}"
+            class="last"
+          >
             <div class="progress">已完成</div>
             <div class="info">2017-10-25 21:38:15</div>
           </li>
@@ -37,26 +43,35 @@
       <div class="form-box accept-box form-box1">
         <dl class="head form-group">
           <dd>
-            订单号：BD20171025213815752
-
-            <a
-              href="#/site/goods/payment/12"
+            订单号：{{orderInfo.order_no}}
+            <router-link
+              v-show="orderInfo.status == 1"
               class="btn-pay"
-            >去付款</a>
+              :to="'/payMoney/'+orderid"
+            >
+              去付款
+            </router-link>
+            <a
+              v-show="orderInfo.status == 2"
+              class="btn-pay"
+              @click="signOrder"
+            >
+              代签收
+            </a>
             <!---->
           </dd>
         </dl>
         <dl class="form-group">
           <dt>订单状态：</dt>
-          <dd>待付款</dd>
+          <dd>{{orderInfo.statusName}}</dd>
         </dl>
         <dl class="form-group">
           <dt>快递单号：</dt>
-          <dd></dd>
+          <dd>{{orderInfo.express_no | showNum("nbspxbxbxb")}}</dd>
         </dl>
         <dl class="form-group">
           <dt>支付方式：</dt>
-          <dd>支付宝</dd>
+          <dd>{{orderInfo.paymentTitle}}</dd>
         </dl>
       </div>
       <div class="table-wrap">
@@ -75,7 +90,10 @@
               <th width="10%">数量</th>
               <th width="10%">金额</th>
             </tr>
-            <tr v-for="(item) in proList" :key="item.id">
+            <tr
+              v-for="(item) in proList"
+              :key="item.goods_id"
+            >
               <td width="60">
                 <img
                   :src="item.imgurl"
@@ -83,10 +101,9 @@
                 />
               </td>
               <td align="left">
-                <a
-                  target="_blank"
-                  href="/goods/show-92.html"
-                >{{item.goods_title}}</a>
+                <router-link :to="'/proDetail/'+item.goods_id">
+                  {{item.goods_title}}
+                </router-link>
               </td>
               <td align="center">
                 <s>￥{{item.goods_price}}</s>
@@ -102,11 +119,11 @@
               >
                 <p>
                   商品金额：
-                  <b class="red">￥</b>&nbsp;&nbsp;+&nbsp;&nbsp;运费：
-                  <b class="red">￥20</b>
+                  <b class="red">￥{{orderInfo.real_amount}}</b>&nbsp;&nbsp;+&nbsp;&nbsp;运费：
+                  <b class="red">￥{{orderInfo.express_fee}}</b>
                 </p>
                 <p style="font-size: 22px;">
-                  应付总金额： <b class="red">￥7220</b>
+                  应付总金额： <b class="red">￥{{orderInfo.order_amount}}</b>
                 </p>
               </td>
             </tr>
@@ -143,26 +160,41 @@
 </template>
 <script>
 export default {
-    name:'orderDetail',
-    data(){
-        return {
-            orderid:undefined,
-            proList:[],
-            orderInfo:{}
-        }
+  name: "orderDetail",
+  data() {
+    return {
+      orderid: undefined,
+      proList: [],
+      orderInfo: {}
+    };
+  },
+  methods: {
+    signOrder() {
+      this.$axios
+        .get(`site/validate/order/complate/${this.orderid}`)
+        .then(data => {
+          console.log(data);
+          this.getData();
+        });
     },
-    created(){
-        this.orderid = this.$route.params.orderid;
-        this.$axios.get('site/validate/order/getorderdetial/'+this.orderid).then(data=>{
-            console.log(data);
-            this.proList = data.data.message.goodslist;
-            this.orderInfo = data.data.message.orderinfo;
-        })
+    getData() {
+      this.$axios
+        .get("site/validate/order/getorderdetial/" + this.orderid)
+        .then(data => {
+          console.log(data);
+          this.proList = data.data.message.goodslist;
+          this.orderInfo = data.data.message.orderinfo;
+        });
     }
+  },
+  created() {
+    this.orderid = this.$route.params.orderid;
+    this.getData();
+  }
 };
 </script>
 <style>
 .accept-box {
-    height: 250px;
+  height: 250px;
 }
 </style>

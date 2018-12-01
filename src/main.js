@@ -72,7 +72,11 @@ let routes = [
 
 let router = new VueRouter({
   mode:'history',
-  routes
+  routes,
+  scrollBehavior (to, from, savedPosition) {
+    // return 期望滚动到哪个的位置
+    return { x: 0, y: 0 }
+  }
 });
 
 // 注册导航守卫
@@ -103,6 +107,9 @@ Vue.filter("showTime", function(value) {
 Vue.filter("showTimePlus", function(value) {
   return moment(value).format("YYYY-MM-DD HH:mm:ss");
 });
+Vue.filter('showNum',function(value,num){
+  return value+num;
+})
 
 // 放大镜组件
 import ProductZoomer from "vue-product-zoomer";

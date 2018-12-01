@@ -31,7 +31,10 @@
               <th width="10%">状态</th>
               <th width="12%">操作</th>
             </tr>
-            <tr v-for="(item) in orderlist" :key="item.id">
+            <tr
+              v-for="(item) in orderlist"
+              :key="item.id"
+            >
               <td>{{item.order_no}}</td>
               <td align="left">{{item.accept_name}}</td>
               <td align="left">
@@ -45,41 +48,72 @@
                   查看订单
                 </router-link>
                 <br>
-                <router-link :to="'/payMoney/'+item.id" v-show="item.status == 1">
-                去付款<br>
+                <router-link
+                  :to="'/payMoney/'+item.id"
+                  v-show="item.status == 1"
+                >
+                  去付款<br>
                 </router-link>
-                <a href="javascript:void(0)">取消</a> <br />
               </td>
             </tr>
           </tbody>
         </table>
-        <div class="page-foot"></div>
+        <div class="page-foot">
+          <el-pagination
+            @current-change="indexChange"
+            :current-page.sync="pageIndex"
+            :page-size="pageSize"
+            layout="prev, pager, next, jumper"
+            :total="totalcount"
+            background
+          >
+          </el-pagination>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
 export default {
-    name:'orderList',
-    data(){
-        return {
-            orderlist:[],
-            pageIndex:1,
-            pageSize:10,
-            totalcount:undefined
-        }
+  name: "orderList",
+  data() {
+    return {
+      orderlist: [],
+      pageIndex: 1,
+      pageSize: 10,
+      totalcount: undefined
+    };
+  },
+  methods:{
+    indexChange(index){
+      this.pageIndex = index;
+      this.getData();
     },
-    created(){
-        this.$axios.get(`site/validate/order/userorderlist?pageIndex=${this.pageIndex}&pageSize=${this.pageSize}`).then(data=>{
-            this.orderlist = data.data.message;
-            this.totalcount = data.data.totalcount;
-            console.log(data);
-        })
+    getData(){
+      this.$axios
+      .get(
+        `site/validate/order/userorderlist?pageIndex=${
+          this.pageIndex
+        }&pageSize=${this.pageSize}`
+      )
+      .then(data => {
+        this.orderlist = data.data.message;
+        this.totalcount = data.data.totalcount;
+        // console.log(data);
+      });
     }
+  },
+  created() {
+    this.getData();
+  }
 };
 </script>
 <style>
-th,td {
-    text-align: center;
+th,
+td {
+  text-align: center;
+}
+.page-foot {
+  text-align: center;
 }
 </style>
